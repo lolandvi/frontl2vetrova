@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор вкладов</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: flex;
+            align-items: flex-start;
+        }
+        .form-container {
+            margin-right: 20px;
+        }
+        .form-container label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        .form-container select,
+        .form-container input {
+            width: 200px;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        .form-container button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 300px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <label for="type">Вид вклада:</label>
+        <select id="type" onchange="updateTerms()">
+            <option value="Пополняемый">Пополняемый</option>
+            <option value="Срочный">Срочный</option>
+        </select>
+
+        <label for="term">Срок вклада:</label>
+        <select id="term"></select>
+
+        <label for="amount">Сумма, руб:</label>
+        <input type="number" id="amount" placeholder="Введите сумму" />
+
+        <button onclick="calculate()">Рассчитать</button>
+    </div>
+
+    <div class="result" id="result">
+        <!-- Результат будет отображаться здесь -->
+    </div>
+
+    <script>
+        const terms = {
+            "Пополняемый": [
+                { term: "6 месяцев", rate: 20 },
+                { term: "1 год", rate: 22 },
+                { term: "1,5 года", rate: 15 },
+                { term: "2 года", rate: 10 }
+            ],
+            "Срочный": [
+                { term: "3 месяца", rate: 20 },
+                { term: "6 месяцев", rate: 22 },
+                { term: "9 месяцев", rate: 23 },
+                { term: "1 год", rate: 24 },
+                { term: "1,5 года", rate: 18 },
+                { term: "2 года", rate: 15 }
+            ]
+        };
+
+        function updateTerms() {
+            const type = document.getElementById("type").value;
+            const termSelect = document.getElementById("term");
+            termSelect.innerHTML = '';
+
+            terms[type].forEach(item => {
+                const option = document.createElement("option");
+                option.value = item.term;
+                option.textContent = item.term;
+                termSelect.appendChild(option);
+            });
+        }
+
+        function calculate() {
+            const type = document.getElementById("type").value;
+            const term = document.getElementById("term").value;
+            const amount = parseFloat(document.getElementById("amount").value);
+            let rate;
+
+            if (isNaN(amount) || amount <= 0) {
+                alert("Пожалуйста, введите корректную сумму.");
+                return;
+            }
+
+            terms[type].forEach(item => {
+                if (item.term === term) {
+                    rate = item.rate;
+                }
+            });
+
+            const totalAmount = amount + (amount * rate / 100);
+            document.getElementById("result").textContent = 
+                `Вклад "${type}" на срок "${term}" на сумму ${amount} руб.\nВ конце срока вы получите ${totalAmount.toFixed(2)} руб.`;
+        }
+
+        // Инициализация сроков при загрузке страницы
+        window.onload = updateTerms;
+    </script>
+
+</body>
+</html>
